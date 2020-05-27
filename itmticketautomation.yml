@@ -1,0 +1,56 @@
+#############################################################################################
+###   NAME:              itmticketautomation.yml                                             #
+###   VERSION:           1.0                                                                 #
+###   DESCRIPTION:       Automate the ticket on Service Now: ITM start process               #
+###   CREATION DATE:     20/11/2019                                                          #
+###   ESCRITO POR:       Felipe Thomaz Giffu                                                 #
+###   E-MAIL:            felipe.giffu@ibm.com                                                #
+###   PLATFORM:          Red Hat / SUSE                                                      #
+#############################################################################################
+---
+- hosts: localhost
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  gather_facts: false
+
+  vars:
+    localBaseDir: /opt/IBM/ITM/bin/
+    localBaseDirScripts: "{{ localBaseDir }}/scripts"
+    ITMscripts: https://github.com/felipegiffu/itmticketautomation/raw/master/scripts.zip
+
+  tasks:
+    - name: Ensures that the directory is created.
+      file:
+        path: "{{ localBaseDir }}"
+        state: directory
+        mode: '0755
+
+    - name: Checking if ITM script exist
+      stat:
+        path: "{{ localBaseDir }}/itmcmd"
+      register: script_file
+    - block:
+      - name: Download Script
+        become: no
+        run_once: yes
+        get_url:
+          url: "{{ item }}"
+          dest: "{{ localBaseDir }}"
+          owner: root
+          group: root
+          mode: 0755
+        with_items:
+          - "{{ ITMscripts }}"
+      - name: Unpacking the Script
+        shell: |
+          cd {{ localBaseDir }};unzip scripts.zip
+          rm {{ localBaseDir }}/scripts.zip
+          chown root:root -R {{ localBaseDir }}
+          chmod 755 -R {{ localBaseDir }}
+        when: script_file.stat.exists == false
+        ignore_errors: no
+
+      - name: Execute Script ( ITM Start )
+        shell:
+          cmd: {{ localBasedIR }}/itmcmd agent start lz
