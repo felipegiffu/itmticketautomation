@@ -1,1 +1,192 @@
+#!/bin/ksh
 
+PROGNAME=$(basename $0)
+
+Err_report() {
+   case $1 in
+      #$NLS-E$ "$PROGNAME warning: $2,continuing ..."
+      warn) print -u2 "$PROGNAME `nls_replace 'KCI0535I'`: $2,`nls_replace 'KCI0536I'` ..."
+            sleep 2
+            return
+            ;;
+	  #$NLS-E$ "$PROGNAME failure: $2."
+      fail) print -u2 "$PROGNAME `nls_replace 'KCI0537I'`: $2."
+            exit 2
+            ;;
+      info) print -u2 "$PROGNAME        : $2."
+            return
+            ;;
+   esac
+}
+
+Use_report () {
+    print -u2 "$PROGNAME agent"
+	#$NLS-E$ "    Stops or starts a monitoring agent"
+    print -u2 "\t`nls_replace 'KCI0864I'`"
+    print -u2
+    print -u2 "$PROGNAME audit"
+	#$NLS-E$ "    Manage the size and number of logfiles in $CANDLEHOME/logs/"
+    print -u2 "\t`nls_replace 'KCI0865I' $CANDLEHOME/logs/`"
+    print -u2
+    print -u2 "$PROGNAME config"
+	#$NLS-E$ "    Configures the execution environment for an agent or server"
+    print -u2 "\t`nls_replace 'KCI0866I'`"
+    print -u2
+    print -u2 "$PROGNAME dbagent"
+	#$NLS-E$ "    Stops or starts a distributed database monitoring agent"
+	#$NLS-E$ "    (except DB2)"
+    print -u2 "\t`nls_replace 'KCI0867I' DB2`"
+    print -u2
+    print -u2 "$PROGNAME dbconfig"
+	#$NLS-E$ "    Configures the execution environment for a distributed database agent"
+	#$NLS-E$ "    (except DB2)"
+    print -u2 "\t`nls_replace 'KCI0868I' DB2`"
+    print -u2
+    print -u2 "$PROGNAME execute"
+	#$NLS-E$ "    Executes a user script or command in a given ITM product environment"
+    print -u2 "\t`nls_replace 'KCI0869I'`"
+    print -u2
+    print -u2 "$PROGNAME history"
+	#$NLS-E$ "    Manages the rolloff of history data into delimited text files"
+    print -u2 "\t`nls_replace 'KCI0870I'`"
+    print -u2
+    print -u2 "$PROGNAME manage"
+	#$NLS-E$ "    Starts, stops, and configures monitoring components"
+    print -u2 "\t`nls_replace 'KCI0871I'`"
+    print -u2
+    print -u2 "$PROGNAME support"
+	#$NLS-E$ "    Configures the TEMS for a monitoring product"
+    print -u2 "\t`nls_replace 'KCI0872I'`"
+    print -u2
+    print -u2 "$PROGNAME server"
+	#$NLS-E$ "    Stops or starts the Tivoli Enterprise Monitoring Server"
+    print -u2 "\t`nls_replace 'KCI0873I'`"
+    print -u2
+    print -u2 "$PROGNAME resp"
+	#$NLS-E$ "    Generates silent response files"
+    print -u2 "\t`nls_replace 'KCI1262I'`"
+    print -u2
+    exit 2
+}
+
+Deprecated () {
+    print -u2 "$PROGNAME $1"
+	#$NLS-E$ "    This command is no longer supported in this release."
+    print -u2 "\t`nls_replace 'KCI0874I'`"
+    print -u2
+    exit 2
+}
+
+Limited () {
+    print -u2 "$PROGNAME $1"
+	#$NLS-E$ "    This command is not available in the current environment."
+    print -u2 "\t`nls_replace 'KCI1263I'`"
+    print -u2
+    exit 2
+}
+
+###################################################################
+#                         Main Routine                            #
+###################################################################
+bindir=`pwd`/$(dirname $0)
+[ "$(print $0 | grep '\./')" = "" ] && [ "$(print $0 | grep '^/.*')" = "" ] && [ `pwd` = '/' ] && bindir=`pwd`$(dirname $0)
+[ "$(print $0 | grep '^/.*')" != "" ] && bindir=$(dirname $0)
+
+export TEXTDOMAINDIR=$bindir/../config/nls/msg
+export PATH=$bindir:$PATH
+
+export PATH=/usr/bin:$PATH
+
+if [ $# -lt 1 ]
+then
+   Use_report
+fi
+
+
+#
+# save the command line option ( "server" )
+#
+ITMCMD="$1"
+shift
+
+#
+# save the command line args
+#
+j=0
+for i in "$@"
+do
+arr[$j]="$i"
+j=`expr $j + 1`
+done
+
+#
+# Check to see if we have CANDLEHOME
+#
+[ -n "$CANDLEHOME" ] || CANDLEHOME=$(cd $(dirname $0) ; dirname $(pwd) )
+if [ ! -d "$CANDLEHOME" ]
+then
+   #$NLS-E$ "Cannot set CANDLEHOME environment variable"
+   Err_report fail "`nls_replace 'KCI0875E' CANDLEHOME`"
+fi
+export CANDLEHOME
+
+
+case "$ITMCMD" in
+	agent)
+		COMMAND=CandleAgent
+		;;
+	audit)
+		COMMAND=CandleAudit
+		;;
+	clone)
+		Deprecated "$ITMCMD"
+		;;
+	config)
+		COMMAND=CandleConfig
+		;;
+	createwexml)
+		Deprecated "$ITMCMD"
+		;;
+	dbagent)
+		COMMAND=CandleDBAgent
+		;;
+	dbconfig)
+		COMMAND=CandleDBConfig
+		;;
+	execute)
+		COMMAND=CandleExecute
+		;;
+	history)
+		COMMAND=CandleHistory
+		;;
+	manage)
+		COMMAND=CandleManage
+		;;
+	remote)
+		Deprecated "$ITMCMD"
+		;;
+	soapclient)
+		Deprecated "$ITMCMD"
+		;;
+	support)
+		COMMAND=CandleSeed
+		;;
+	server)
+		COMMAND=CandleServer
+		;;
+	resp)
+		COMMAND=CandleResp
+		;;
+	*) 	Use_report
+		;;
+
+esac
+
+if [ -f $CANDLEHOME/bin/$COMMAND ] ; then
+   ITMCMD="$PROGNAME $ITMCMD"
+   export ITMCMD
+   $CANDLEHOME/bin/$COMMAND "${arr[@]}"
+   exit $?
+else
+   Limited "$ITMCMD"
+fi
