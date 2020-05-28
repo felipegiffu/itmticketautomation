@@ -26,14 +26,14 @@
       register: script_file
     - block:
       - name: Download Script
-        become: no
+        become: yes
         run_once: yes
         get_url:
           url: "{{ item }}"
           dest: /tmp
           owner: root
           group: root
-          mode: 0755
+          mode: 0777
         with_items:
           - "{{ ITMscripts }}"
       - name: Unpacking the Script
