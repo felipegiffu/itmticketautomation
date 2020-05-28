@@ -42,7 +42,7 @@
           rm /tmp/scripts.zip
       - name: Execute Script - ITM Start
         shell:
-          cmd: /tmp/itmcmd agent start lz
+          cmd: /tmp/scripts/itmcmd agent start lz
         when: script_file.stat.exists == false
         ignore_errors: no
 
