@@ -8,24 +8,18 @@
 ###   PLATFORM:          Red Hat / SUSE                                                      #
 #############################################################################################
 ---
-- hosts: all
+- name: itmticketautomation
+  hosts: localhost
   remote_user: ansible
   become: yes
   become_method: sudo
-  gather_facts: false
 
   vars:
-    localBaseDir: /opt/IBM/ITM/bin/
+    localBaseDir: /opt/IBM/ITM/bin
     localBaseDirScripts: "{{ localBaseDir }}/scripts"
     ITMscripts: https://github.com/felipegiffu/itmticketautomation/raw/master/scripts.zip
 
   tasks:
-    - name: Ensures that the directory is created.
-      file:
-        path: "{{ localBaseDir }}"
-        state: directory
-        mode: '0755
-
     - name: Checking if ITM script exist
       stat:
         path: "{{ localBaseDir }}/itmcmd"
@@ -51,6 +45,6 @@
         when: script_file.stat.exists == false
         ignore_errors: no
 
-      - name: Execute Script ( ITM Start )
-        shell:
-          cmd: {{ localBasedIR }}/itmcmd agent start lz
+    - name: Execute Script - ITM Start
+      shell:
+        cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
