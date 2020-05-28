@@ -9,7 +9,7 @@
 #############################################################################################
 ---
 - name: itmticketautomation
-  hosts: localhost
+  hosts: all
   remote_user: ansible
   become: yes
   become_method: sudo
