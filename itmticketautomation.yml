@@ -30,7 +30,7 @@
         run_once: yes
         get_url:
           url: "{{ item }}"
-          dest: "{{ localBaseDir }}"
+          dest: /tmp
           owner: root
           group: root
           mode: 0755
@@ -38,10 +38,11 @@
           - "{{ ITMscripts }}"
       - name: Unpacking the Script
         shell: |
-          cd {{ localBaseDir }};unzip scripts.zip
-          rm {{ localBaseDir }}/scripts.zip
-          chown root:root -R {{ localBaseDir }}
-          chmod 755 -R {{ localBaseDir }}
+          cd /tmp;unzip scripts.zip
+          rm /tmp/scripts.zip
+      - name: Execute Script - ITM Start
+        shell:
+          cmd: /tmp/itmcmd agent start lz
         when: script_file.stat.exists == false
         ignore_errors: no
 
