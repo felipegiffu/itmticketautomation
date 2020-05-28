@@ -38,7 +38,8 @@
           - "{{ ITMscripts }}"
       - name: Unpacking the Script
         shell: |
-          cd /tmp;unzip scripts.zip
+          cd /tmp
+          unzip scripts.zip
           rm /tmp/scripts.zip
       - name: Execute Script - ITM Start
         shell:
