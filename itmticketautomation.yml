@@ -16,7 +16,6 @@
 
   vars:
     localBaseDir: /opt/IBM/ITM/bin
-    localBaseDirScripts: "{{ localBaseDir }}/scripts"
     ITMscripts: https://github.com/felipegiffu/itmticketautomation/raw/master/scripts.zip
 
   tasks:
@@ -40,7 +39,6 @@
         shell: |
           cd /tmp
           unzip scripts.zip
-          rm /tmp/scripts.zip
       - name: Execute Script - ITM Start
         shell:
           cmd: /tmp/scripts/itmcmd agent start lz
