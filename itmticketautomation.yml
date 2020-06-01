@@ -14,37 +14,15 @@
   become: yes
   become_method: sudo
 
-  vars:
-    localBaseDir: /opt/IBM/ITM/bin
-    ITMscripts: https://github.com/felipegiffu/itmticketautomation/raw/master/scripts.zip
-
   tasks:
-    - name: Checking if ITM script exist
-      stat:
-        path: "{{ localBaseDir }}/itmcmd"
-      register: script_file
-    - block:
-      - name: Download Script
-        become: yes
-        run_once: yes
-        get_url:
-          url: "{{ item }}"
-          dest: /tmp
-          owner: root
-          group: root
-          mode: 0777
-        with_items:
-          - "{{ ITMscripts }}"
-      - name: Unpacking the Script
-        shell: |
-          cd /tmp
-          unzip scripts.zip
-      - name: Execute Script - ITM Start
-        shell:
-          cmd: /tmp/scripts/itmcmd agent start lz
-        when: script_file.stat.exists == false
-        ignore_errors: no
-
     - name: Execute Script - ITM Start
       shell:
         cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
+    - name: Execute Script - ITM Status
+      shell:
+        cmd: /opt/IBM/ITM/bin/cinfo -r
+      register: infoscript
+    - name: Display patches available to be installed
+      debug:
+        msg: " ITM STATUS: {{ infoscript.status }} "
+...
