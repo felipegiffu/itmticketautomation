@@ -22,7 +22,7 @@
       shell:
         cmd: /opt/IBM/ITM/bin/cinfo -r
       register: infoscript
-    - name: Display patches available to be installed
+    - name: Display ITM Status
       debug:
-        msg: " ITM STATUS: {{ infoscript.status }} "
+        var: infoscript
 ...
