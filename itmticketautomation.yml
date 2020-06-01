@@ -9,7 +9,7 @@
 #############################################################################################
 ---
 - name: itmticketautomation
-  hosts: all
+  hosts: massive.boulder.ibm.com
   remote_user: ansible
   become: yes
   become_method: sudo
