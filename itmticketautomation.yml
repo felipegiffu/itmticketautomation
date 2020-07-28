@@ -9,15 +9,22 @@
 #############################################################################################
 ---
 - name: itmticketautomation
-  hosts: massive.boulder.ibm.com, prttestats.pok.ibm.com
+  hosts: massive.boulder.ibm.com
   remote_user: ansible
   become: yes
   become_method: sudo
 
   tasks:
+    - name: Red Hat / SUSE Servers
+      block:
+    - name: Validating ITM klzagent process
+      shell: ps -ef |grep klzagent | grep -v grep
+      register: ps_output                  
     - name: Execute Script - ITM Start
       shell:
         cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
+      when: ps_output.stat.exists == true
+      ignore_errors: no 
     - name: Execute Script - ITM Status
       shell:
         cmd: /opt/IBM/ITM/bin/cinfo -r
@@ -25,4 +32,11 @@
     - name: Display ITM Status
       debug:
         var: infoscript
+      when: 
+      - ansible_distribution == "RedHat"
+      - ansible_distribution == "SLES"
+      
+    - name: AIX Servers
+      block:
+    
 ...
