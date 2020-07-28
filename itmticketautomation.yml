@@ -35,8 +35,5 @@
       when: 
       - ansible_distribution == "RedHat"
       - ansible_distribution == "SLES"
-      
-    - name: AIX Servers
-      block:
-    
+       
 ...
