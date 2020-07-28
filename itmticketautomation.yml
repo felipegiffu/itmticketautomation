@@ -23,9 +23,9 @@
       shell:
         cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
       when: 
-      - ps_output.stat.exists == true 
-      - ansible_distribution == "SLES"
-      ignore_errors: no 
+      - ps_output.stat.exists == false
+#      - ansible_distribution == "SLES"
+      ignore_errors: no
     - name: Execute Script - ITM Status
       shell:
         cmd: /opt/IBM/ITM/bin/cinfo -r
