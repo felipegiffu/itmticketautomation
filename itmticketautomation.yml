@@ -4,13 +4,12 @@
   remote_user: ansible
   become: yes
   become_method: sudo
-
   tasks:
-      shell:
-        cmd: ps -ef |grep klzagent | grep -v grep 
-      register: ps_results
-      changed_when: "'/opt/IBM/ITM/lx8266/lz/bin/klzagent' in command_result stdout"
-      when:
+    shell:
+      cmd: ps -ef |grep klzagent | grep -v grep 
+    register: ps_results
+    changed_when: "'/opt/IBM/ITM/lx8266/lz/bin/klzagent' in command_result stdout"
+    when:
       - ansible_distribution == "SLES"
       - ansible_distribution == "Redhat"
   handlers:    
