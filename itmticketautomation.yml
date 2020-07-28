@@ -14,7 +14,7 @@
         echo "1"
         fi
       register: ps_results
-    - debug: ps=ps_results.stdout_lines
+    - debug: ps_results.stdout_lines
     - name: Execute Script - ITM Start
       shell:
         cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
