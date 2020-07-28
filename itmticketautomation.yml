@@ -1,12 +1,3 @@
-#############################################################################################
-###   NAME:              itmticketautomation.yml                                             #
-###   VERSION:           1.0                                                                 #
-###   DESCRIPTION:       Automate the ticket on Service Now: ITM start process               #
-###   CREATION DATE:     20/11/2019                                                          #
-###   ESCRITO POR:       Felipe Thomaz Giffu                                                 #
-###   E-MAIL:            felipe.giffu@ibm.com                                                #
-###   PLATFORM:          Red Hat / SUSE                                                      #
-#############################################################################################
 ---
 - name: itmticketautomation
   hosts: massive.boulder.ibm.com
@@ -15,16 +6,21 @@
   become_method: sudo
 
   tasks:
-    - name: Validating ITM klzagent process
-      shell: ps -ef |grep klzagent | grep -v grep
-      register: ps_output       
-      ignore_errors: yes
+    - name: Comparing last kernel and running kernel
+      shell: |
+        ps_output=$(ps -ef |grep klzagent | grep -v grep)
+        if [[ $ps_output == NULL ]]; then
+        # Stop playbook
+        echo "1"
+        fi
+      register: ps_results
+    - debug: ps=ps_results.stdout_lines
     - name: Execute Script - ITM Start
       shell:
         cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
-      when: 
-      - ps_output.stat.exists == false
-#      - ansible_distribution == "SLES"
+      when:
+      - ps_output.stat.exists == true
+      - ansible_distribution == "SLES"
       ignore_errors: no
     - name: Execute Script - ITM Status
       shell:
@@ -34,5 +30,5 @@
       debug:
         var: infoscript
 
-       
+
 ...
