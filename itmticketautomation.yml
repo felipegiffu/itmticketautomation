@@ -17,7 +17,8 @@
   tasks:
     - name: Validating ITM klzagent process
       shell: ps -ef |grep klzagent | grep -v grep
-      register: ps_output                  
+      register: ps_output       
+      ignore_errors: yes
     - name: Execute Script - ITM Start
       shell:
         cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
