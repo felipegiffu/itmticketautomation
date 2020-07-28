@@ -6,22 +6,20 @@
   become_method: sudo
 
   tasks:
-    - name: Comparing last kernel and running kernel
-      shell: |
-        ps_output=$(ps -ef |grep klzagent | grep -v grep)
-        if [[ $ps_output == NULL ]]; then
-        # Stop playbook
-        echo "1"
-        fi
+      shell:
+        cmd: ps -ef |grep klzagent | grep -v grep 
       register: ps_results
-    - debug: ps_results.stdout_lines
+      changed_when: "'/opt/IBM/ITM/lx8266/lz/bin/klzagent' in command_result stdout"
+      when:
+      - ansible_distribution == "SLES"
+      - ansible_distribution == "Redhat"
+  handlers:    
     - name: Execute Script - ITM Start
       shell:
         cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
       when:
-      - ps_output.stat.exists == true
       - ansible_distribution == "SLES"
-      ignore_errors: no
+      - ansible_distribution == "Redhat"
     - name: Execute Script - ITM Status
       shell:
         cmd: /opt/IBM/ITM/bin/cinfo -r
@@ -29,6 +27,4 @@
     - name: Display ITM Status
       debug:
         var: infoscript
-
-
 ...
