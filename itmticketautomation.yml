@@ -1,24 +1,22 @@
 ---
 - name: itmticketautomation
-  hosts: massive.boulder.ibm.com
+  hosts: LINUX_TEST
   remote_user: ansible
   become: yes
   become_method: sudo
   tasks:
-    shell:
-      cmd: ps -ef |grep klzagent | grep -v grep 
-    register: ps_results
-    changed_when: "'/opt/IBM/ITM/lx8266/lz/bin/klzagent' in command_result stdout"
-    when:
-      - ansible_distribution == "SLES"
-      - ansible_distribution == "Redhat"
-  handlers:    
-    - name: Execute Script - ITM Start
-      shell:
-        cmd: /opt/IBM/ITM/bin/itmcmd agent start lz
-      when:
-      - ansible_distribution == "SLES"
-      - ansible_distribution == "Redhat"
+    - name: Checking LZ Agent status
+      shell: ps -ef |grep klzagent | grep -v grep
+      register: ps_results
+      ignore_errors: yes
+    #- debug:
+    #    var: ps_results
+    
+    - name: Start agent if stopped
+      shell: /opt/IBM/ITM/bin/itmcmd agent start lz
+      when: ps_results.rc == 1
+#      - ansible_distribution == "SLES"
+#      - ansible_distribution == "Redhat"
     - name: Execute Script - ITM Status
       shell:
         cmd: /opt/IBM/ITM/bin/cinfo -r
