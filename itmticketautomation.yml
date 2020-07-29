@@ -1,6 +1,6 @@
 ---
 - name: itmticketautomation
-  hosts: LINUX_TEST
+  hosts: massive.boulder.ibm.com
   remote_user: ansible
   become: yes
   become_method: sudo
