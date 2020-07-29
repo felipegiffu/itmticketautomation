@@ -8,15 +8,10 @@
     - name: Checking LZ Agent status
       shell: ps -ef |grep klzagent | grep -v grep
       register: ps_results
-      ignore_errors: yes
-    #- debug:
-    #    var: ps_results
-    
+      ignore_errors: yes 
     - name: Start agent if stopped
       shell: /opt/IBM/ITM/bin/itmcmd agent start lz
       when: ps_results.rc == 1
-#      - ansible_distribution == "SLES"
-#      - ansible_distribution == "Redhat"
     - name: Execute Script - ITM Status
       shell:
         cmd: /opt/IBM/ITM/bin/cinfo -r
@@ -24,4 +19,29 @@
     - name: Display ITM Status
       debug:
         var: infoscript
+#      - ansible_distribution == "SLES"
+#      - ansible_distribution == "Redhat" 
+
+ #   - name: Checking LZ Agent status
+ #     shell: ps -ef | grep -i kuxagent
+ #     register: ps_resultsaix
+ #     ignore_errors: yes 
+ #   - name: Start agent if stopped
+ #     shell: /opt/IBM/ITM/bin/itmcmd agent start ux
+ #     when: ps_results.rc == 1
+ #   - name: Start Errpt agent if stopped
+ #     shell: /opt/IBM/ITM/bin/itmcmd agent -o Errpt start lo
+ #   - name: Execute Script - ITM Status
+ #     shell:
+ #       cmd: /opt/IBM/ITM/bin/cinfo -r
+ #     register: infoscript
+ #   - name: Display ITM Status
+ #     debug:
+ #       var: infoscript
+ #     - ansible_distribution == "AIX"
+
+       
+       
+       
+       
 ...
